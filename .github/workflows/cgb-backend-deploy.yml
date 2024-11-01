@@ -78,7 +78,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST_BACK }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY_BACK }}
           script: |
             # 8080 포트에서 실행 중인 기존 프로세스 종료
             if lsof -i:8080 -t >/dev/null; then
