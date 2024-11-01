@@ -36,6 +36,31 @@ jobs:
       - name: Build project in backend folder
         run: ./gradlew build
         working-directory: ./backend
+        env: # 환경 변수를 설정
+          AES_ALGORITHM: ${{ secrets.AES_ALGORITHM }}
+          AES_SECRET_KEY: ${{ secrets.AES_SECRET_KEY }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DDL_TYPE: ${{ secrets.DDL_TYPE }}
+          ES_HOST: ${{ secrets.ES_HOST }}
+          ES_PORT: ${{ secrets.ES_PORT }}
+          ES_URL: ${{ secrets.ES_URL }}
+          FIXED_DELAY: ${{ secrets.FIXED_DELAY }}
+          FRONT_REDIRECT_URL: ${{ secrets.FRONT_REDIRECT_URL }}
+          IMP_API_KEY: ${{ secrets.IMP_API_KEY }}
+          IMP_SECRET_KEY: ${{ secrets.IMP_SECRET_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          KAKAO_REDIRECT_URL: ${{ secrets.KAKAO_REDIRECT_URL }}
+          KAKAO_REST_API: ${{ secrets.KAKAO_REST_API }}
+          MAX_ACTIVE: ${{ secrets.MAX_ACTIVE }}
+          PORT: ${{ secrets.PORT }}
+          QUEUE_NECESSARY: ${{ secrets.QUEUE_NECESSARY }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          WAITING_QUEUE_SCHEDULER: ${{ secrets.WAITING_QUEUE_SCHEDULER }}
 
       # 빌드 파일을 EC2 인스턴스로 전송
       - name: Copy build files to EC2
