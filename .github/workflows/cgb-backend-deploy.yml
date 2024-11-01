@@ -26,6 +26,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'
+          distribution: 'oracle'
 
       # backend 폴더로 이동해 Spring Boot 애플리케이션을 빌드
       - name: Build project in backend folder
