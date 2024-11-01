@@ -34,7 +34,7 @@ jobs:
 
       # backend 폴더로 이동해 Spring Boot 애플리케이션을 빌드
       - name: Build project in backend folder
-        run: ./gradlew build
+        run: ./gradlew bootJar
         working-directory: ./backend
         env: # 환경 변수를 설정
           AES_ALGORITHM: ${{ secrets.AES_ALGORITHM }}
