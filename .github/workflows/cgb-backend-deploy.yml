@@ -69,7 +69,7 @@ jobs:
           host: ${{ secrets.EC2_HOST_BACK }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY_BACK }}
-          source: "./backend/build/libs/*.jar"
+          source: "./backend/build/libs/backend-0.0.1-SNAPSHOT.jar"
           target: "/home/ubuntu/action/app.jar"
 
       # EC2 인스턴스에서 애플리케이션 실행
