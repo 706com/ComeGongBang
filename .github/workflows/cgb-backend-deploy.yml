@@ -1,0 +1,58 @@
+name: Deploy to AWS EC2
+
+# 배포 조건
+# 1) backend/develop -> develop MERGE
+# 2) Labeling
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'backend') &&
+      contains(github.event.pull_request.labels.*.name, 'operation')
+    runs-on: ubuntu-latest
+
+    steps:
+      # 소스 코드를 체크아웃
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      # JDK 설정
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+
+      # backend 폴더로 이동해 Spring Boot 애플리케이션을 빌드
+      - name: Build project in backend folder
+        run: ./gradlew build
+        working-directory: ./backend
+
+      # 빌드 파일을 EC2 인스턴스로 전송
+      - name: Copy build files to EC2
+        uses: appleboy/scp-action@v0.0.5
+        with:
+          host: ${{ secrets.EC2_HOST_BACK }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY_BACK }}
+          source: "./build/libs/*.jar"
+          target: "/home/ubuntu/action/app.jar"
+
+      # EC2 인스턴스에서 애플리케이션 실행
+      - name: Run application on EC2
+        uses: appleboy/ssh-action@v0.1.2
+        with:
+          host: ${{ secrets.EC2_HOST_BACK }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 8080 포트에서 실행 중인 기존 프로세스 종료
+            if lsof -i:8080 -t >/dev/null; then
+              kill -9 $(lsof -i:8080 -t)
+            fi
+            # 새로운 애플리케이션 실행
+            nohup java -jar /home/ubuntu/action/app.jar > /home/ubuntu/action/app.log 2>&1 &
