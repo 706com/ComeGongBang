@@ -28,6 +28,10 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
 
+      - name: Grant permission
+        run: chmod +x ./backend/gradlew
+        working-directory: ./backend
+
       # backend 폴더로 이동해 Spring Boot 애플리케이션을 빌드
       - name: Build project in backend folder
         run: ./gradlew build
