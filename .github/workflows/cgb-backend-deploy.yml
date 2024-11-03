@@ -73,7 +73,7 @@ jobs:
             echo "TARGET_HOST=${{ secrets.EC2_HOST_BACK_B }}" >> $GITHUB_ENV  # (B)
             echo "TARGET_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_B }}" >> $GITHUB_ENV # (B)  
             echo "OTHER_HOST=${{ secrets.EC2_HOST_BACK_A }}" >> $GITHUB_ENV  # 반대 EC2 (A)
-            echo "OTHER_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_A }}" >> $GITHUB_ENV  (A)
+            echo "OTHER_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_A }}" >> $GITHUB_ENV  #(A)
           
           # A가 실행중이지 않으면 A에 배포
           else
@@ -81,7 +81,7 @@ jobs:
             echo "TARGET_HOST=${{ secrets.EC2_HOST_BACK_A }}" >> $GITHUB_ENV   # (A)
             echo "TARGET_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_A }}" >> $GITHUB_ENV  # (A)
             echo "OTHER_HOST=${{ secrets.EC2_HOST_BACK_B }}" >> $GITHUB_ENV  # 반대 EC2 (B)
-            echo "OTHER_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_B }}" >> $GITHUB_ENV  (B)
+            echo "OTHER_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_B }}" >> $GITHUB_ENV # (B)
           fi
 
 #      # 빌드 파일을 EC2 인스턴스로 전송
