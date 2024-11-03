@@ -148,8 +148,7 @@ jobs:
               kill -9 $(lsof -i:8080 -t)
             fi
             # 새로운 애플리케이션 실행
-            nohup bash -c "source /home/ubuntu/.bashrc && java -jar /home/ubuntu/action/backend-0.1.jar" > /home/ubuntu/action/cgb.log 2>&1 &
-            
+            nohup bash -c "source /home/ubuntu/.bashrc && java -jar /home/ubuntu/action/backend/build/libs/backend-0.1.jar" > /home/ubuntu/action/cgb.log 2>&1 &            
             
       # 기존 실행중이었던 EC2에서 30초 후에 8080 프로세스 종료
       - name: Stop application on OTHER EC2 after 30 seconds
