@@ -119,7 +119,7 @@ jobs:
           source: "./backend/build/libs/backend-0.1.jar"
           target: "/home/ubuntu/action/"
 
-#      # EC2 인스턴스에서 애플리케이션 실행
+#      ## EC2 인스턴스에서 애플리케이션 실행
 #      - name: Run application on EC2
 #        uses: appleboy/ssh-action@master
 #        with:
