@@ -72,16 +72,32 @@ jobs:
             echo "EC2 A가 실행 중입니다. EC2 B에 배포합니다..."
             echo "TARGET_HOST=${{ secrets.EC2_HOST_BACK_B }}" >> $GITHUB_ENV  # (B)
             echo "TARGET_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_B }}" >> $GITHUB_ENV # (B)  
-            echo "OTHER_HOST=${{ secrets.EC2_HOST_BACK_A }}" >> $GITHUB_ENV  # 반대 EC2 (A)
-            echo "OTHER_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_A }}" >> $GITHUB_ENV  #(A)
+#            echo "OTHER_HOST=${{ secrets.EC2_HOST_BACK_A }}" >> $GITHUB_ENV  # 반대 EC2 (A)
+#            echo "OTHER_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_A }}" >> $GITHUB_ENV  #(A)
+            echo "TARGET_EC2_SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.EC2_SSH_KEY_BACK_B }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+             
+            echo "OTHER_EC2_SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.EC2_SSH_KEY_BACK_A }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          
           
           # A가 실행중이지 않으면 A에 배포
           else
             echo "EC2 A가 실행 중이지 않습니다. EC2 A에 배포합니다..."
             echo "TARGET_HOST=${{ secrets.EC2_HOST_BACK_A }}" >> $GITHUB_ENV   # (A)
             echo "TARGET_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_A }}" >> $GITHUB_ENV  # (A)
-            echo "OTHER_HOST=${{ secrets.EC2_HOST_BACK_B }}" >> $GITHUB_ENV  # 반대 EC2 (B)
-            echo "OTHER_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_B }}" >> $GITHUB_ENV # (B)
+#            echo "OTHER_HOST=${{ secrets.EC2_HOST_BACK_B }}" >> $GITHUB_ENV  # 반대 EC2 (B)
+#            echo "OTHER_EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_BACK_B }}" >> $GITHUB_ENV # (B)
+            echo "TARGET_EC2_SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.EC2_SSH_KEY_BACK_A }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+           
+            echo "OTHER_EC2_SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.EC2_SSH_KEY_BACK_B }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV          
+          
           fi
 
 #      # 빌드 파일을 EC2 인스턴스로 전송
