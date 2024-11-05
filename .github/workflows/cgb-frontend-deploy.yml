@@ -40,21 +40,6 @@ jobs:
           cd frontend
           npm run build
 
-#      # 5. 기존 dist 및 default 파일 백업 (안전장치 1)
-#      - name: Backup existing dist and default.conf
-#        uses: appleboy/ssh-action@v0.1.9
-#        with:
-#          host: ${{ secrets.EC2_HOST_FRONT_A }}
-#          username: ubuntu
-#          key: ${{ secrets.EC2_SSH_KEY_FRONT_A }}
-#          script: |
-#            # 백업 폴더 생성
-#            TIMESTAMP=$(date +%Y%m%d%H%M%S)
-#            sudo mkdir -p /var/www/html/backup_$TIMESTAMP
-#            sudo cp -r /var/www/html/dist /var/www/html/backup_$TIMESTAMP/
-#            sudo cp /etc/nginx/sites-available/default /var/www/html/backup_$TIMESTAMP/
-
-
       # 날짜와 시간 포맷 설정
       - name: Set timestamp
         run: echo "DATE_TIME=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
@@ -63,7 +48,7 @@ jobs:
       - name: Upload backupFile to S3
         uses: jakejarvis/s3-sync-action@v0.5.1
         with:
-          args: --acl public-read
+          args: ''
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
