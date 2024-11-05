@@ -65,7 +65,28 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
-      # 6. EC2 서버에서 dist 파일을 /var/www/html/로 복사
+      # 6. dist 폴더 EC2 배포
+      - name: Deploy dist to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_FRONT_A }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY_FRONT_A }}
+          source: frontend/dist/*
+          target: /home/ubuntu/deploy
+          rm: true  # 기존 파일 덮어쓰기
+
+      # 7. Nginx 설정 파일 EC2 배포
+      - name: Deploy Nginx Configuration
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_FRONT_A }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY_FRONT_A }}
+          source: cicd/frontend/aws/default.conf
+          target: /home/ubuntu/deploy
+
+      # 8. EC2 서버에서 dist 파일을 /var/www/html/로 복사
       - name: Move dist to /var/www/html
         uses: appleboy/ssh-action@v0.1.9
         with:
@@ -76,7 +97,7 @@ jobs:
             sudo cp -r /home/ubuntu/deploy/dist/* /var/www/html/dist/  # dist 파일을 복사
             sudo chown -R www-data:www-data /var/www/html/  # 소유권 변경
 
-      # 7. Nginx 설정 파일 덮어쓰고 재시작
+      # 9. Nginx 설정 파일 덮어쓰고 재시작
       - name: Move Nginx Configuration
         uses: appleboy/ssh-action@v0.1.9
         with:
@@ -86,6 +107,7 @@ jobs:
           script: |
             sudo cp /home/ubuntu/deploy/default.conf /etc/nginx/sites-available/default  # Nginx 설정 파일 복사
             sudo nginx -s reload  # Nginx 설정 재시작
+
 
 #      # 8. Nginx 재시작
 #      - name: Restart Nginx
