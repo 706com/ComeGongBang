@@ -94,7 +94,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY_FRONT_A }}
           script: |
-            sudo cp -r /home/ubuntu/deploy/dist/* /var/www/html/dist/  # dist 파일을 복사
+            sudo cp -r /home/ubuntu/deploy/frontend/dist/* /var/www/html/dist/  # dist 파일을 복사
             sudo chown -R www-data:www-data /var/www/html/  # 소유권 변경
 
       # 9. Nginx 설정 파일 덮어쓰고 재시작
@@ -105,7 +105,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY_FRONT_A }}
           script: |
-            sudo cp /home/ubuntu/deploy/default.conf /etc/nginx/sites-available/default  # Nginx 설정 파일 복사
+            sudo cp /home/ubuntu/deploy/cicd/frontend/aws/default.conf /etc/nginx/sites-available/default  # Nginx 설정 파일 복사
             sudo nginx -s reload  # Nginx 설정 재시작
 
 

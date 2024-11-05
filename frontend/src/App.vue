@@ -7,6 +7,7 @@
     <HeaderCategoriesComponent />
     <router-view></router-view>
     <FooterComponent />
+    aa
   </div>
 </template>
 
