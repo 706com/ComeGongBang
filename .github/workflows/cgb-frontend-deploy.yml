@@ -1,0 +1,116 @@
+name: Deploy Vue to AWS EC2
+
+# 배포 조건
+# 1) frontend/develop -> develop MERGE
+# 2) Labeling
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'frontend') &&
+      contains(github.event.pull_request.labels.*.name, 'operation')
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. GitHub Actions Runner에서 코드를 체크아웃
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2. Node.js 설치
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16  # Vue 3.x과 적합한 Node.js 버전
+
+      # 3. npm 종속성 설치
+      - name: Install npm dependencies
+        run: |
+          cd frontend
+          npm install
+
+      # 4. Vue 앱 빌드
+      - name: Build Vue Application
+        run: |
+          cd frontend
+          npm run build
+
+#      # 5. 기존 dist 및 default 파일 백업 (안전장치 1)
+#      - name: Backup existing dist and default.conf
+#        uses: appleboy/ssh-action@v0.1.9
+#        with:
+#          host: ${{ secrets.EC2_HOST_FRONT_A }}
+#          username: ubuntu
+#          key: ${{ secrets.EC2_SSH_KEY_FRONT_A }}
+#          script: |
+#            # 백업 폴더 생성
+#            TIMESTAMP=$(date +%Y%m%d%H%M%S)
+#            sudo mkdir -p /var/www/html/backup_$TIMESTAMP
+#            sudo cp -r /var/www/html/dist /var/www/html/backup_$TIMESTAMP/
+#            sudo cp /etc/nginx/sites-available/default /var/www/html/backup_$TIMESTAMP/
+
+
+      # 날짜와 시간 포맷 설정
+      - name: Set timestamp
+        run: echo "DATE_TIME=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+
+      # 5. S3에 dist 폴더와 default.conf 백업
+      - name: Upload backupFile to S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --acl public-read
+        env:
+          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: 'frontend/dist'
+          DEST_DIR: "backups/${{ env.DATE_TIME }}/dist"
+
+      - name: Upload nginx.conf to S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --acl public-read
+        env:
+          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: 'cicd/frontend/default'
+          DEST_DIR: "backups/${{ env.DATE_TIME }}/"
+
+      # 6. EC2 서버에 SSH로 dist 폴더 배포
+      - name: Deploy dist to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_FRONT_A }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY_FRONT_A }}
+          source: frontend/dist/*
+          target: /var/www/html/dist/
+          rm: true  # 기존 파일 덮어쓰기
+
+      # 7. Nginx 설정 파일 덮어쓰기
+      - name: Deploy Nginx Configuration
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_FRONT_A }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY_FRONT_A }}
+          source: cicd/frontend/default
+          target: /etc/nginx/sites-available/default
+
+      # 8. Nginx 재시작
+      - name: Restart Nginx
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.EC2_HOST_FRONT_A }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY_FRONT_A }}
+          script: |
+            sudo systemctl reload nginx
