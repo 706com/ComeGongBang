@@ -71,6 +71,7 @@ public class SecurityConfig {
         config.addAllowedOrigin("10.96.180.103");
 
         config.addAllowedOrigin("https://www.comegongbangs.kro.kr");
+        config.addAllowedOrigin("https://comegongbangs.kro.kr");
 
         config.addAllowedMethod("*"); // 허용할 메서드 (GET, POST, PUT 등)
         config.addAllowedHeader("*"); // 허용할 헤더
