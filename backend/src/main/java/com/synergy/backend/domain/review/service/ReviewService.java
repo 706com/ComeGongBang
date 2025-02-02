@@ -80,7 +80,6 @@ public class ReviewService {
         return ReadDetailReviewRes.from(reviewIdx, review);
     }
 
-
     public Page<MyReviewListRes> getMyReviewList(Long memberIdx, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return reviewRepository.findByReVIewByMemberIdx(memberIdx, pageable);
